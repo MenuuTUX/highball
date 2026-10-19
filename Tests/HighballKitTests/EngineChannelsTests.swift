@@ -93,6 +93,10 @@ final class EngineChannelsTests: XCTestCase {
         XCTAssertNil(game.previewRevisionToOffer(current: r5, known: [r3, r5], macOS: "27.0"), "already on it")
         XCTAssertNil(game.previewRevisionToOffer(current: r3, known: [r3], macOS: "27.0"), "a revision this install does not see")
         XCTAssertNil(game.previewRevisionToOffer(current: otherLine, known: [otherLine, r5], macOS: "27.0"), "another line")
+        // The line decides, not the channel the installed copy of the current engine's manifest carries.
+        let r3Installed = try manifest(id: "arm64-line-r3", channel: nil)
+        XCTAssertTrue(EngineChannels.runsLine(current: r3Installed, of: r5))
+        XCTAssertEqual(game.previewRevisionToOffer(current: r3Installed, known: [r3, r5], macOS: "27.0")?.id, "arm64-line-r5")
         // A Wine 10 or Wine 11 environment never moves on its own, whatever its recipe pins.
         XCTAssertNil(try recipe(engine: "x64-line-r24").previewRevisionToOffer(current: x64, known: [x64, x64Later], macOS: "27.0"))
     }

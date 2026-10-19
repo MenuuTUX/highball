@@ -668,11 +668,11 @@ public extension Recipe {
     /// The later revision to offer an environment this recipe was applied to while it runs an earlier revision of the
     /// preview line the recipe pins: Microsoft Flight Simulator 2024 set up on r3 when its recipe moved to r5
     /// (2026-10-19). The engine ask comes only before a recipe is applied, so nothing else would offer it, and a
-    /// preview line moves fast. Nil for every other line: a Wine 10 or Wine 11 environment never moves on its own.
+    /// preview line moves fast. Nil for every other line: a Wine 10 or Wine 11 environment never moves on its own. The
+    /// offer's bundled manifest says whether the line is in preview, as in EngineChannels.runsLine.
     func previewRevisionToOffer(current: EngineManifest, known: [EngineManifest],
                                 macOS: String = Machine.macOSVersion()) -> EngineManifest? {
-        guard current.channel == EngineChannels.preview, let id = engine,
-              let line = EngineManifest.line(of: current.id), line == EngineManifest.line(of: id),
+        guard let id = engine, let line = EngineManifest.line(of: current.id), line == EngineManifest.line(of: id),
               let offer = engineToOffer(current: current, known: known, macOS: macOS),
               offer.channel == EngineChannels.preview, EngineManifest.line(of: offer.id) == line else { return nil }
         return offer

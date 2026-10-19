@@ -52,10 +52,11 @@ public enum EngineChannels {
 
     /// Whether an environment on `current` already runs the preview line `offer` belongs to: an earlier revision the
     /// player took for the game. Play then counts the later revision as theirs too and offers the move
-    /// (Recipe.previewRevisionToOffer) instead of asking whether to use a preview engine they already use.
+    /// (Recipe.previewRevisionToOffer) instead of asking whether to use a preview engine they already use. The line
+    /// decides, with the bundled offer's channel saying it is in preview, whatever the installed copy of the current
+    /// engine's manifest carries.
     public static func runsLine(current: EngineManifest, of offer: EngineManifest) -> Bool {
-        guard current.channel == Self.preview, offer.channel == Self.preview,
-              let line = EngineManifest.line(of: current.id) else { return false }
+        guard offer.channel == Self.preview, let line = EngineManifest.line(of: current.id) else { return false }
         return line == EngineManifest.line(of: offer.id)
     }
 }
