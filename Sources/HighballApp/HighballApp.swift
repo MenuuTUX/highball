@@ -228,6 +228,7 @@ struct ContentView: View {
         .engineAsk(state)
         .updateAsk(state)
         .previewAsk(state)
+        .previewMoveAsk(state)
         .uninstallAsk(state)
         .rendererTrialAsk(state)
         .modesetTrialAsk(state)
@@ -440,6 +441,19 @@ private extension View {
             Button(L("Not now"), role: .cancel) { state.pendingPreview = nil }
         } message: { pending in
             Text(GamePageCopy.previewAsk(recipe: pending.recipe, manifest: pending.manifest))
+        }
+    }
+    /// An environment on an earlier revision of the preview line its game's recipe pins (AppState.pendingPreviewMove).
+    @MainActor func previewMoveAsk(_ state: AppState) -> some View {
+        self.alert(state.pendingPreviewMove.map { String(format: L("A newer preview engine for %@"), $0.recipe.title) } ?? "",
+                   isPresented: .init(get: { state.pendingPreviewMove != nil }, set: { if !$0 { state.pendingPreviewMove = nil } }),
+                   presenting: state.pendingPreviewMove) { pending in
+            Button(L("Move this environment")) { state.acceptPreviewMove() }
+            Button(String(format: L("Play on %@"), GamePageCopy.revisionName(pending.current))) { state.playWithoutPreviewMove() }
+            Button(L("Not now"), role: .cancel) { state.pendingPreviewMove = nil }
+        } message: { pending in
+            Text(GamePageCopy.previewMoveAsk(recipe: pending.recipe, current: pending.current, manifest: pending.manifest,
+                                             installed: state.engines.contains { $0.id == pending.manifest.id }))
         }
     }
 
